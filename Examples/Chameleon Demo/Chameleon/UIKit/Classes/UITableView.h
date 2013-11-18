@@ -98,10 +98,12 @@ typedef enum {
     UITableViewCellSeparatorStyle _separatorStyle;
     UIView *_tableHeaderView;
     UIView *_tableFooterView;
+    UIView *_backgroundView;
     BOOL _allowsSelection;
     BOOL _allowsSelectionDuringEditing;
     BOOL _editing;
     NSIndexPath *_selectedRow;
+    NSIndexPath *_highlightedRow;
     NSMutableDictionary *_cachedCells;
     NSMutableSet *_reusableCells;
     NSMutableArray *_sections;
@@ -109,26 +111,26 @@ typedef enum {
     CGFloat _sectionFooterHeight;
     
     struct {
-        BOOL heightForRowAtIndexPath : 1;
-        BOOL heightForHeaderInSection : 1;
-        BOOL heightForFooterInSection : 1;
-        BOOL viewForHeaderInSection : 1;
-        BOOL viewForFooterInSection : 1;
-        BOOL willSelectRowAtIndexPath : 1;
-        BOOL didSelectRowAtIndexPath : 1;
-        BOOL willDeselectRowAtIndexPath : 1;
-        BOOL didDeselectRowAtIndexPath : 1;
-        BOOL willBeginEditingRowAtIndexPath : 1;
-        BOOL didEndEditingRowAtIndexPath : 1;
-        BOOL titleForDeleteConfirmationButtonForRowAtIndexPath: 1;
+        unsigned heightForRowAtIndexPath : 1;
+        unsigned heightForHeaderInSection : 1;
+        unsigned heightForFooterInSection : 1;
+        unsigned viewForHeaderInSection : 1;
+        unsigned viewForFooterInSection : 1;
+        unsigned willSelectRowAtIndexPath : 1;
+        unsigned didSelectRowAtIndexPath : 1;
+        unsigned willDeselectRowAtIndexPath : 1;
+        unsigned didDeselectRowAtIndexPath : 1;
+        unsigned willBeginEditingRowAtIndexPath : 1;
+        unsigned didEndEditingRowAtIndexPath : 1;
+        unsigned titleForDeleteConfirmationButtonForRowAtIndexPath: 1;
     } _delegateHas;
     
     struct {
-        BOOL numberOfSectionsInTableView : 1;
-        BOOL titleForHeaderInSection : 1;
-        BOOL titleForFooterInSection : 1;
-        BOOL commitEditingStyle : 1;
-        BOOL canEditRowAtIndexPath : 1;
+        unsigned numberOfSectionsInTableView : 1;
+        unsigned titleForHeaderInSection : 1;
+        unsigned titleForFooterInSection : 1;
+        unsigned commitEditingStyle : 1;
+        unsigned canEditRowAtIndexPath : 1;
     } _dataSourceHas;
 }
 
@@ -175,6 +177,7 @@ typedef enum {
 @property (nonatomic, retain) UIColor *separatorColor;
 @property (nonatomic, retain) UIView *tableHeaderView;
 @property (nonatomic, retain) UIView *tableFooterView;
+@property (nonatomic, retain) UIView *backgroundView;
 @property (nonatomic) BOOL allowsSelection;
 @property (nonatomic) BOOL allowsSelectionDuringEditing;	// not implemented
 @property (nonatomic, getter=isEditing) BOOL editing;

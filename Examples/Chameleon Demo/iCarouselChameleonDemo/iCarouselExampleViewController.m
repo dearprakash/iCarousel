@@ -11,20 +11,12 @@
 #import "iCarousel.h"
 
 
-#define IS_IPAD (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-
-#define NUMBER_OF_ITEMS 19
-#define NUMBER_OF_VISIBLE_ITEMS 19
-#define ITEM_SPACING 210
-#define INCLUDE_PLACEHOLDERS YES
-
-
 @interface iCarouselExampleViewController () <iCarouselDataSource, iCarouselDelegate, UIActionSheetDelegate>
 
-@property (nonatomic, retain) iCarousel *carousel;
-@property (nonatomic, retain) UINavigationItem *navItem;
+@property (nonatomic, strong) iCarousel *carousel;
+@property (nonatomic, strong) UINavigationItem *navItem;
 @property (nonatomic, assign) BOOL wrap;
-@property (nonatomic, retain) NSMutableArray *items;
+@property (nonatomic, strong) NSMutableArray *items;
 
 @end
 
@@ -42,7 +34,7 @@
     {
         //set up data
         self.items = [NSMutableArray array];
-        for (int i = 0; i < NUMBER_OF_ITEMS; i++)
+        for (int i = 0; i < 100; i++)
         {
             [items addObject:[NSNumber numberWithInt:i]];
         }
@@ -57,10 +49,6 @@
 	carousel.delegate = nil;
 	carousel.dataSource = nil;
 	
-    [carousel release];
-    [navItem release];
-	[items release];
-    [super dealloc];
 }
 
 #pragma mark -
@@ -73,7 +61,7 @@
     wrap = YES;
 	
 	//add background
-	UIImageView *backgroundView = [[[UIImageView alloc] initWithFrame:self.view.bounds] autorelease];
+	UIImageView *backgroundView = [[UIImageView alloc] initWithFrame:self.view.bounds];
 	backgroundView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	backgroundView.image = [UIImage imageNamed:@"background.png"];
 	[self.view addSubview:backgroundView];
@@ -91,23 +79,21 @@
 	//add top bar
 	UINavigationBar *navbar = [[UINavigationBar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 44)];
 	navbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-	self.navItem = [[[UINavigationItem alloc] initWithTitle:@"Coverflow2"] autorelease];
-	navItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Switch Type" style:UIBarButtonItemStyleBordered target:self action:@selector(switchCarouselType)] autorelease];
-	navItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Wrap: ON" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleWrap)] autorelease];
+	self.navItem = [[UINavigationItem alloc] initWithTitle:@"Coverflow2"];
+	navItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Switch Type" style:UIBarButtonItemStyleBordered target:self action:@selector(switchCarouselType)];
+	navItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Wrap: ON" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleWrap)];
 	[navbar setItems:[NSArray arrayWithObject:navItem]];
 	[self.view addSubview:navbar];
-	[navbar release];
 	
 	//add bottom bar
 	UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - 44, self.view.bounds.size.width, 44)];
 	toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
 	[toolbar setItems:[NSArray arrayWithObjects:
-					   [[[UIBarButtonItem alloc] initWithTitle:@"Insert Item" style:UIBarButtonItemStyleBordered target:self action:@selector(insertItem)] autorelease],
-					   [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:NULL] autorelease],
-					   [[[UIBarButtonItem alloc] initWithTitle:@"Delete Item" style:UIBarButtonItemStyleBordered target:self action:@selector(removeItem)] autorelease],
+					   [[UIBarButtonItem alloc] initWithTitle:@"Insert Item" style:UIBarButtonItemStyleBordered target:self action:@selector(insertItem)],
+					   [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:NULL],
+					   [[UIBarButtonItem alloc] initWithTitle:@"Delete Item" style:UIBarButtonItemStyleBordered target:self action:@selector(removeItem)],
 					   nil]];
 	[self.view addSubview:toolbar];
-	[toolbar release];
 }
 
 - (void)viewDidUnload
@@ -124,7 +110,7 @@
 
 - (NSArray *)carouselTypes
 {
-	return [NSArray arrayWithObjects:@"Linear", @"Rotary", @"Inverted Rotary", @"Cylinder", @"Inverted Cylinder", @"Wheel", @"Inverted Wheel",  @"CoverFlow", @"CoverFlow2", @"Time Machine", @"Custom", nil];
+	return [NSArray arrayWithObjects:@"Linear", @"Rotary", @"Inverted Rotary", @"Cylinder", @"Inverted Cylinder", @"Wheel", @"Inverted Wheel",  @"CoverFlow", @"CoverFlow2", @"Time Machine", @"Inverted Time Machine", @"Custom", nil];
 }
 
 - (IBAction)switchCarouselType
@@ -139,7 +125,6 @@
 		[sheet addButtonWithTitle:title];
 	}
     [sheet showInView:self.view];
-    [sheet release];
 }
 
 - (IBAction)toggleWrap
@@ -171,14 +156,11 @@
 
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
-    //restore view opacities to normal
-    for (UIView *view in carousel.visibleItemViews)
+    if (buttonIndex >= 0)
     {
-        view.alpha = 1.0;
+    	carousel.type = (iCarouselType)buttonIndex;
+    	navItem.title = [[self carouselTypes] objectAtIndex:buttonIndex];
     }
-        
-    carousel.type = (iCarouselType)buttonIndex;
-    navItem.title = [[self carouselTypes] objectAtIndex:buttonIndex];
 }
 
 #pragma mark -
@@ -189,12 +171,6 @@
     return [items count];
 }
 
-- (NSUInteger)numberOfVisibleItemsInCarousel:(iCarousel *)carousel
-{
-    //limit the number of items views loaded concurrently (for performance reasons)
-    return NUMBER_OF_VISIBLE_ITEMS;
-}
-
 - (UIView *)carousel:(iCarousel *)carousel viewForItemAtIndex:(NSUInteger)index reusingView:(UIView *)view
 {
     UILabel *label = nil;
@@ -202,8 +178,10 @@
 	//create new view if no view is available for recycling
 	if (view == nil)
 	{
-		view = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"page.png"]] autorelease];
-		label = [[[UILabel alloc] initWithFrame:view.bounds] autorelease];
+		view = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 200.0f, 200.0f)];
+        ((UIImageView *)view).image = [UIImage imageNamed:@"page.png"];
+        view.contentMode = UIViewContentModeCenter;
+		label = [[UILabel alloc] initWithFrame:view.bounds];
 		label.backgroundColor = [UIColor clearColor];
 		label.textAlignment = UITextAlignmentCenter;
 		label.font = [label.font fontWithSize:50];
@@ -220,12 +198,6 @@
 	return view;
 }
 
-- (NSUInteger)numberOfPlaceholdersInCarousel:(iCarousel *)carousel
-{
-	//note: placeholder views are only displayed if wrapping is disabled
-	return INCLUDE_PLACEHOLDERS? 2: 0;
-}
-
 - (UIView *)carousel:(iCarousel *)carousel placeholderViewAtIndex:(NSUInteger)index reusingView:(UIView *)view
 {
 	UILabel *label = nil;
@@ -233,8 +205,8 @@
 	//create new view if no view is available for recycling
 	if (view == nil)
 	{
-		view = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"page.png"]] autorelease];
-		label = [[[UILabel alloc] initWithFrame:view.bounds] autorelease];
+		view = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"page.png"]];
+		label = [[UILabel alloc] initWithFrame:view.bounds];
 		label.backgroundColor = [UIColor clearColor];
 		label.textAlignment = UITextAlignmentCenter;
 		label.font = [label.font fontWithSize:50.0f];
@@ -251,18 +223,6 @@
 	return view;
 }
 
-- (CGFloat)carouselItemWidth:(iCarousel *)carousel
-{
-    //slightly wider than item view
-    return ITEM_SPACING;
-}
-
-- (CGFloat)carousel:(iCarousel *)carousel itemAlphaForOffset:(CGFloat)offset
-{
-	//set opacity based on distance from camera
-    return 1.0f - fminf(fmaxf(offset, 0.0f), 1.0f);
-}
-
 - (CATransform3D)carousel:(iCarousel *)_carousel itemTransformForOffset:(CGFloat)offset baseTransform:(CATransform3D)transform
 {
     //implement 'flip3D' style carousel
@@ -270,10 +230,35 @@
     return CATransform3DTranslate(transform, 0.0f, 0.0f, offset * carousel.itemWidth);
 }
 
-- (BOOL)carouselShouldWrap:(iCarousel *)carousel
+- (CGFloat)carousel:(iCarousel *)_carousel valueForOption:(iCarouselOption)option withDefault:(CGFloat)value
 {
-    //wrap all carousels
-    return wrap;
+    //customize carousel display
+    switch (option)
+    {
+        case iCarouselOptionWrap:
+        {
+            //normally you would hard-code this to YES or NO
+            return wrap;
+        }
+        case iCarouselOptionSpacing:
+        {
+            //add a bit of spacing between the item views
+            return value * 1.05f;
+        }
+        case iCarouselOptionFadeMax:
+        {
+            if (carousel.type == iCarouselTypeCustom)
+            {
+                //set opacity based on distance from camera
+                return 0.0f;
+            }
+            return value;
+        }
+        default:
+        {
+            return value;
+        }
+    }
 }
 
 @end

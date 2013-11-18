@@ -32,6 +32,7 @@
 #import "UIColor.h"
 #import "UIFont.h"
 #import "UIImage.h"
+#import <AppKit/NSCursor.h>
 
 NSString *const UITextFieldTextDidBeginEditingNotification = @"UITextFieldTextDidBeginEditingNotification";
 NSString *const UITextFieldTextDidChangeNotification = @"UITextFieldTextDidChangeNotification";
@@ -47,7 +48,7 @@ NSString *const UITextFieldTextDidEndEditingNotification = @"UITextFieldTextDidE
 @synthesize delegate=_delegate, background=_background, disabledBackground=_disabledBackground, editing=_editing, clearsOnBeginEditing=_clearsOnBeginEditing;
 @synthesize adjustsFontSizeToFitWidth=_adjustsFontSizeToFitWidth, clearButtonMode=_clearButtonMode, leftView=_leftView, rightView=_rightView;
 @synthesize leftViewMode=_leftViewMode, rightViewMode=_rightViewMode, placeholder=_placeholder, borderStyle=_borderStyle;
-@synthesize inputAccessoryView=_inputAccessoryView, inputView=_inputView;
+@synthesize inputAccessoryView=_inputAccessoryView, inputView=_inputView, minimumFontSize=_minimumFontSize;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -508,5 +509,9 @@ NSString *const UITextFieldTextDidEndEditingNotification = @"UITextFieldTextDidE
     return [NSString stringWithFormat:@"<%@: %p; textAlignment = %@; editing = %@; textColor = %@; font = %@; delegate = %@>", [self className], self, textAlignment, (self.editing ? @"YES" : @"NO"), self.textColor, self.font, self.delegate];
 }
 
+- (id)mouseCursorForEvent:(UIEvent *)event
+{
+    return [NSCursor IBeamCursor];
+}
 
 @end

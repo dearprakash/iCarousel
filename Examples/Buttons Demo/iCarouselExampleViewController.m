@@ -9,10 +9,6 @@
 #import "iCarouselExampleViewController.h"
 
 
-#define NUMBER_OF_ITEMS ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)? 19: 12)
-#define ITEM_SPACING 210
-
-
 @implementation iCarouselExampleViewController
 
 @synthesize carousel;
@@ -21,8 +17,6 @@
 {
     carousel.delegate = nil;
     carousel.dataSource = nil;
-    [carousel release];
-    [super dealloc];
 }
 
 #pragma mark -
@@ -52,7 +46,11 @@
 
 - (NSUInteger)numberOfItemsInCarousel:(iCarousel *)carousel
 {
-    return NUMBER_OF_ITEMS;
+    //generate 100 buttons
+    //normally we'd use a backing array
+    //as shown in the basic iOS example
+    //but for this example we haven't bothered
+    return 100;
 }
 
 - (UIView *)carousel:(iCarousel *)carousel viewForItemAtIndex:(NSUInteger)index reusingView:(UIView *)view
@@ -76,24 +74,19 @@
 	return button;
 }
 
-- (CGFloat)carouselItemWidth:(iCarousel *)carousel
-{
-    return ITEM_SPACING;
-}
-
 #pragma mark -
 #pragma mark Button tap event
 
 - (void)buttonTapped:(UIButton *)sender
 {
 	//get item index for button
-	NSInteger index = [carousel indexOfItemView:sender];
+	NSInteger index = [carousel indexOfItemViewOrSubview:sender];
 	
-    [[[[UIAlertView alloc] initWithTitle:@"Button Tapped"
+    [[[UIAlertView alloc] initWithTitle:@"Button Tapped"
                                  message:[NSString stringWithFormat:@"You tapped button number %i", index]
                                 delegate:nil
                        cancelButtonTitle:@"OK"
-                       otherButtonTitles:nil] autorelease] show];
+                       otherButtonTitles:nil] show];
 }
 
 @end

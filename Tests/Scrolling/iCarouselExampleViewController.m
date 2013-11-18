@@ -9,26 +9,23 @@
 #import "iCarouselExampleViewController.h"
 
 
-#define NUMBER_OF_ITEMS ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)? 19: 12)
-#define ITEM_SPACING 210
-
-
 @implementation iCarouselExampleViewController
 
-@synthesize carousel;
-
-- (void)reloadAndScroll
+- (IBAction)reloadAndScroll;
 {
-	[carousel reloadData];
-    [carousel scrollByNumberOfItems:5 duration:0.0f];
+	[self.carousel reloadData];
+    [self.carousel scrollByOffset:4.5 duration:0.0];
+}
+
+- (IBAction)stop
+{
+    self.carousel.scrollOffset = self.carousel.scrollOffset;
 }
 
 - (void)dealloc
 {
-    carousel.delegate = nil;
-    carousel.dataSource = nil;
-    [carousel release];
-    [super dealloc];
+    self.carousel.delegate = nil;
+    self.carousel.dataSource = nil;
 }
 
 #pragma mark -
@@ -39,7 +36,10 @@
     [super viewDidLoad];
     
     //configure carousel
-    carousel.type = iCarouselTypeCoverFlow2;
+    self.carousel.type = iCarouselTypeCoverFlow;
+    
+    //scroll to fixed offset
+    [self.carousel scrollToItemAtIndex:5 animated:NO];
 }
 
 - (void)viewDidUnload
@@ -58,15 +58,15 @@
 
 - (NSUInteger)numberOfItemsInCarousel:(iCarousel *)carousel
 {
-    return NUMBER_OF_ITEMS;
+    return 1000;
 }
 
 - (UIView *)carousel:(iCarousel *)carousel viewForItemAtIndex:(NSUInteger)index reusingView:(UIView *)view
 {
     //create a numbered view
-    view = [[[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 200.0f, 200.0f)] autorelease];
+    view = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 200.0f, 200.0f)];
     view.backgroundColor = [UIColor lightGrayColor];
-    UILabel *label = [[[UILabel alloc] initWithFrame:view.bounds] autorelease];
+    UILabel *label = [[UILabel alloc] initWithFrame:view.bounds];
     label.text = [NSString stringWithFormat:@"%i", index];
     label.backgroundColor = [UIColor clearColor];
     label.textAlignment = UITextAlignmentCenter;
@@ -75,9 +75,19 @@
     return view;
 }
 
-- (CGFloat)carouselItemWidth:(iCarousel *)carousel
+- (CGFloat)carousel:(iCarousel *)carousel valueForOption:(iCarouselOption)option withDefault:(CGFloat)value
 {
-    return ITEM_SPACING;
+    switch (option)
+    {
+        case iCarouselOptionWrap:
+        {
+            return YES;
+        }
+        default:
+        {
+            return value;
+        }
+    }
 }
 
 - (void)carouselWillBeginDragging:(iCarousel *)carousel

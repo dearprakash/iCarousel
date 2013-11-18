@@ -9,10 +9,6 @@
 #import "iCarouselExampleViewController.h"
 
 
-#define NUMBER_OF_ITEMS ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)? 19: 12)
-#define ITEM_SPACING 210
-
-
 @implementation iCarouselExampleViewController
 
 @synthesize carousel;
@@ -21,8 +17,6 @@
 {
     carousel.delegate = nil;
     carousel.dataSource = nil;
-    [carousel release];
-    [super dealloc];
 }
 
 #pragma mark -
@@ -52,18 +46,13 @@
 
 - (NSUInteger)numberOfItemsInCarousel:(iCarousel *)carousel
 {
-    return NUMBER_OF_ITEMS;
+    return 1000;
 }
 
 - (UIView *)carousel:(iCarousel *)carousel viewForItemAtIndex:(NSUInteger)index reusingView:(UIView *)view
 {
     //load from nib
     return [[[NSBundle mainBundle] loadNibNamed:@"ItemView" owner:self options:nil] lastObject];
-}
-
-- (CGFloat)carouselItemWidth:(iCarousel *)carousel
-{
-    return ITEM_SPACING;
 }
 
 #pragma mark -
